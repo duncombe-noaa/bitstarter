@@ -64,13 +64,27 @@ var clone = function(fn) {
     return fn.bind({});
 };
 
+ var response2console = function(result, response) {
+        if (result instanceof Error) {
+            console.error('Error: ' + util.format(response.message));
+        } else {
+            console.error("Wrote %s", csvfile);
+            fs.writeFileSync(csvfile, result);
+            csv2console(csvfile, headers);
+        }
+    };
+
+
 if(require.main == module) {
     program
         .option('-c, --checks <check_file>', 'Path to checks.json', clone(assertFileExists), CHECKSFILE_DEFAULT)
         .option('-f, --file <html_file>', 'Path to index.html', clone(assertFileExists), HTMLFILE_DEFAULT)
-        .option('-u, --url <url_file>', 'URL path', clone(assertFileExists), URLFILE_DEFAULT)
+        // .option('-u, --url <url_file>', 'URL path', clone(assertFileExists), URLFILE_DEFAULT)
+        .option('-u, --url <url_file>', 'URL path')
         .parse(process.argv);
     var urlFile = program.url;
+    // console.log(urlFile);
+	rest.get(urlFile).on('complete', response2console);
     var checkJson = checkHtmlFile(program.file, program.checks);
     var outJson = JSON.stringify(checkJson, null, 4);
     console.log(outJson);
