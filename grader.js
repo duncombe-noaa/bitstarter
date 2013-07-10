@@ -21,6 +21,8 @@ References:
    - https://developer.mozilla.org/en-US/docs/JSON#JSON_in_Firefox_2
 */
 
+// var isURL = false;
+
 var fs = require('fs');
 var program = require('commander');
 var cheerio = require('cheerio');
@@ -39,8 +41,19 @@ var assertFileExists = function(infile) {
     return instr;
 };
 
-var cheerioHtmlFile = function(htmlfile) {
-    return cheerio.load(fs.readFileSync(htmlfile));
+var cheerioHtmlFile = function(htmlfile) {	// 
+	if ( isURL ){
+		return  rest.get(htmlfile).on('complete', function(result) {
+  								if (result instanceof Error) {
+    								sys.puts('Error: ' + result.message);
+    								this.retry(5000); // try again after 5 sec
+  								} else {
+    								sys.puts(result); }
+							});
+	}
+	else {
+    		return cheerio.load(fs.readFileSync(htmlfile));
+	}
 };
 
 var loadChecks = function(checksfile) {
@@ -80,8 +93,7 @@ var response2console = function(result, response) {
 if(require.main == module) {
     program
         .option('-c, --checks <check_file>', 'Path to checks.json', clone(assertFileExists), CHECKSFILE_DEFAULT)
-        // .option('-f, --file <html_file>', 'Path to index.html', clone(assertFileExists), HTMLFILE_DEFAULT)
-        .option('-f, --file <html_file>', 'Path to index.html')
+        .option('-f, --file <html_file>', 'Path to index.html', clone(assertFileExists), HTMLFILE_DEFAULT)
         // .option('-u, --url <url_file>', 'URL path', clone(assertFileExists), URLFILE_DEFAULT)
         .option('-u, --url <url_file>', 'URL path')
         .parse(process.argv);
@@ -93,8 +105,11 @@ if(require.main == module) {
     console.log("Checks: ", program.checks);
     console.log();
 
-//	rest.get(urlFile).on('complete', response2console);
-    var checkJson = checkHtmlFile(program.file, program.checks);
+
+    var CheckThisFile = program.file ;
+    if (program.url) { var isURL = true; CheckThisFile = program.url  } 
+
+    var checkJson = checkHtmlFile(CheckThisFile, program.checks);
     var outJson = JSON.stringify(checkJson, null, 4);
     console.log(outJson);
 } else {
