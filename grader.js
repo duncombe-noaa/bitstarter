@@ -19,6 +19,15 @@ References:
    - http://en.wikipedia.org/wiki/JSON
    - https://developer.mozilla.org/en-US/docs/JSON
    - https://developer.mozilla.org/en-US/docs/JSON#JSON_in_Firefox_2
+
+Adding: 
+	Access a URL and grade that too 
+
++ restler
+
+Going with the option to write the downloaded code to a file and then parse the 
+intermediate file with the existing code. (Very ugly but I am out of time.)
+
 */
 
 var fs = require('fs');
@@ -26,7 +35,6 @@ var program = require('commander');
 var cheerio = require('cheerio');
 var rest = require('restler');
 
-// var URLFILE_DEFAULT = "http://localhost/index.html";
 var HTMLFILE_DEFAULT = "index.html";
 var CHECKSFILE_DEFAULT = "checks.json";
 
@@ -64,51 +72,36 @@ var clone = function(fn) {
     return fn.bind({});
 };
 
-/*
-var response2console = function(result, response) {
-        if (result instanceof Error) {
-            console.error('Error: ' + util.format(response.message));
-        } else {
-            console.error("Wrote %s", csvfile);
-            fs.writeFileSync(csvfile, result);
-            csv2console(csvfile, headers);
-        }
-    };
-*/
-
-
 if(require.main == module) {
     program
         .option('-c, --checks <check_file>', 'Path to checks.json', clone(assertFileExists), CHECKSFILE_DEFAULT)
         .option('-f, --file <html_file>', 'Path to index.html', clone(assertFileExists), HTMLFILE_DEFAULT)
-        // .option('-u, --url <url_file>', 'URL path', clone(assertFileExists), URLFILE_DEFAULT)
         .option('-u, --url <url_file>', 'URL path')
         .parse(process.argv);
-    // var urlFile = program.url;
 
-    console.log();
-    console.log("URL: ", program.url);
-    console.log("File: ", program.file);
-    console.log("Checks: ", program.checks);
-    console.log();
-
+//    console.log();
+//    console.log("URL: ", program.url);
+//    console.log("File: ", program.file);
+//    console.log("Checks: ", program.checks);
+//    console.log();
+//
 	if (program.url){
 		rest.get(program.url).on('complete',function(result) {
             			if (result instanceof Error) {
                 			sys.puts('Error: ' + result.message);
                 			this.retry(5000); // try again after 5 sec
             			} else {
-                			fs.writeFileSync("outfile.html", result); // Question 2
-                			var checkJson = checkHtmlFile("outfile.html", program.checks); // Question 3
+                			fs.writeFileSync("outfile.html", result); 
+                			var checkJson = checkHtmlFile("outfile.html", program.checks);
                 			var outJson = JSON.stringify(checkJson, null, 4);
                 			console.log(outJson);
             			}
-        			});
+        		});
 		}
 	else {
 		var checkJson = checkHtmlFile(program.file, program.checks);
-    var outJson = JSON.stringify(checkJson, null, 4);
-    console.log(outJson);
+    		var outJson = JSON.stringify(checkJson, null, 4);
+    		console.log(outJson);
 	}
 } else {
     exports.checkHtmlFile = checkHtmlFile;
