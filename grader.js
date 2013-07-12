@@ -28,6 +28,8 @@ Adding:
 Going with the option to write the downloaded code to a file and then parse the 
 intermediate file with the existing code. (Very ugly but I am out of time.)
 
+Gonna try and tidy this up, and do it without writing a temporary file
+
 */
 
 var fs = require('fs');
@@ -48,7 +50,7 @@ var assertFileExists = function(infile) {
 };
 
 var cheerioHtmlFile = function(htmlfile) {
-    return cheerio.load(fs.readFileSync(htmlfile));
+    return cheerio.load(fs.readFileSync(htmlfile)); // fs.readFileSync(htmlfile) loads the contents of htmlfile and gives it to cheerioHtmlFile
 };
 
 var loadChecks = function(checksfile) {
