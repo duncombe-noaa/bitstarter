@@ -8,8 +8,9 @@ var app = express.createServer(express.logger());
 // console.log(textstring);
 
 app.get('/', function(request, response) {
-  var buffer = fs.readFileSync('index.html'); 
-  var textstring = buffer.toString('utf8');
+//  var buffer = fs.readFileSync('index.html'); 
+//  var textstring = buffer.toString('utf8');
+  var textstring = fs.readFileSync('index.html','utf8'); 
   response.send(textstring);
 });
 
